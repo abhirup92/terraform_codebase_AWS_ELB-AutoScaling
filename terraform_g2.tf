@@ -19,11 +19,11 @@ lifecycle {
 create_before_destroy = true
 }
 }
-data "aws_availability_zones" "allzones" {}
+
 resource "aws_autoscaling_group" "aws_autoscaling_group" {
 name = "g2_autoscale"
 launch_configuration = "${aws_launch_configuration.webcluster.name}"
-availability_zones = ["${data.aws_availability_zones.allzones.names}"]
+availability_zones = ["us-east-2a", "us-east-2b", us-east-2c"]
 min_size = 1
 max_size = 3
 enabled_metrics = ["GroupMinSize", "GroupMaxSize", "GroupDesiredCapacity", "GroupInServiceInstances", "GroupTotalInstances"]
@@ -112,7 +112,7 @@ create_before_destroy = true
 }
 resource "aws_elb" "elb1" {
 name = "terraform-elb"
-availability_zones = ["${data.aws_availability_zones.allzones.names}"]
+availability_zones = ["us-east-2a", "us-east-2b", us-east-2c"]
 security_groups = ["${aws_security_group.elbsg.id}"]
 access_logs {
 bucket = "elb-log.davidwzhang.com"
