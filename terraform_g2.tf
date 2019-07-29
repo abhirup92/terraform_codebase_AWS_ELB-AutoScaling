@@ -19,7 +19,7 @@ lifecycle {
 create_before_destroy = true
 }
 }
-data “aws_availability_zones” “allzones” {}
+data "aws_availability_zones" "allzones" {}
 resource "aws_autoscaling_group" "aws_autoscaling_group" {
 name = "g2_autoscale"
 launch_configuration = "${aws_launch_configuration.webcluster.name}"
