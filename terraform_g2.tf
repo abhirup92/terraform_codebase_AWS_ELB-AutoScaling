@@ -7,7 +7,7 @@ resource "aws_launch_configuration" "webcluster" {
 name = "ruby_AWS_LC"
 image_id= "ami-0c209b87f96c6444f"
 instance_type = "t2.micro"
-security_group_id = ["${aws_security_group.websg.id}"]
+security_groups = ["${aws_security_group.websg.id}"]
 key_name = "abhi"
 user_data = <<-EOF
 #!/bin/bash
@@ -19,18 +19,17 @@ lifecycle {
 create_before_destroy = true
 }
 }
-
+data “aws_availability_zones” “allzones” {}
 resource "aws_autoscaling_group" "aws_autoscaling_group" {
 name = "g2_autoscale"
 launch_configuration = "${aws_launch_configuration.webcluster.name}"
-availability_zones = "us-east-2"
+availability_zones = ["${data.aws_availability_zones.allzones.names}"]
 min_size = 1
 max_size = 3
 enabled_metrics = ["GroupMinSize", "GroupMaxSize", "GroupDesiredCapacity", "GroupInServiceInstances", "GroupTotalInstances"]
 metrics_granularity="1Minute"
 load_balancers= ["${aws_elb.elb1.id}"]
 health_check_type = "ELB"
-health_check_grace_period_seconds = "120"
 tag {
 key = "Name"
 value = "terraform-asg-example"
@@ -110,12 +109,11 @@ cidr_blocks = ["0.0.0.0/0"]
 lifecycle {
 create_before_destroy = true
 }
-
-
+}
 resource "aws_elb" "elb1" {
 name = "terraform-elb"
-availability_zones = ["us-east-2"]
-security_group_id = ["sg-08732d86997bc8fcd"]
+availability_zones = ["${data.aws_availability_zones.allzones.names}"]
+security_groups = ["${aws_security_group.elbsg.id}"]
 access_logs {
 bucket = "elb-log.davidwzhang.com"
 bucket_prefix = "elb"
